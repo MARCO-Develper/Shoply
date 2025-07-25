@@ -12,15 +12,38 @@ class HomeCubit extends Cubit<HomeState> {
 
   List<CategoryResponse> categories = [];
   List<ProductResponse> products = [];
+  List<ProductResponse> productsOfCategory = [];
 
-  Future<void> getHomeData() async {
-    emit(HomeLoadingState());
+  // تحميل الفئات
+  Future<void> getCategories() async {
+    emit(HomeCategoryLoading());
     try {
       categories = await HomeApi.getCategories();
-      products = await HomeApi.getProducts();
-      emit(HomeSuccessState());
+      emit(HomeCategorySuccess());
     } catch (e) {
-      emit(HomeErrorState());
+      emit(HomeCategoryError());
+    }
+  }
+
+  // تحميل المنتجات
+  Future<void> getProducts() async {
+    emit(HomeProductLoading());
+    try {
+      products = await HomeApi.getProducts();
+      emit(HomeProductSuccess());
+    } catch (e) {
+      emit(HomeProductError());
+    }
+  }
+
+  // تحميل منتجات فئة معينة
+  Future<void> getProductsOfCategory(String categoryId) async {
+    emit(HomeProductOfCategoryLoading());
+    try {
+      productsOfCategory = await HomeApi.getProductsOfCategory(categoryId);
+      emit(HomeProductOfCategorySuccess());
+    } catch (e) {
+      emit(HomeProductOfCategoryError(e.toString()));
     }
   }
 }

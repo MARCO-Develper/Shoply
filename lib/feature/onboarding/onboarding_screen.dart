@@ -1,6 +1,10 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shoply/feature/auth/controller/login/login_cubit.dart';
+import 'package:shoply/feature/auth/controller/register/register_cubit.dart';
 import 'package:shoply/feature/auth/view/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shoply/feature/auth/view/register_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -107,8 +111,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       curve: Curves.easeIn,
                     );
                   } else {
-                    Navigator.of(context)
-                        .pushReplacementNamed(LoginScreen.routeName);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) => RegisterCubit(),
+                          child: RegisterScreen(),
+                        ),
+                      ),
+                    );
                   }
                 },
                 color: Color(0xff212121),

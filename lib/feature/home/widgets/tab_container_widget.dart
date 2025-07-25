@@ -1,7 +1,9 @@
 import 'package:shoply/core/model/response/category_response.dart';
+import 'package:shoply/feature/home/controller/home_cubit.dart';
 import 'package:shoply/feature/home/view/product_of_category_screen.dart';
 import 'package:shoply/feature/home/widgets/tab_item_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TabContainerWidget extends StatefulWidget {
   const TabContainerWidget({
@@ -30,15 +32,24 @@ class _TabContainerWidgetState extends State<TabContainerWidget> {
             tabAlignment: TabAlignment.start,
             labelPadding: EdgeInsets.zero,
             onTap: (int index) {
-              Navigator.of(context).pushNamed(
-                ProductOfCategoryScreen.routeName,
-                arguments: widget.categories[index],
+              // إنشاء BlocProvider جديد للصفحة الجديدة
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider<HomeCubit>(
+                    create: (context) => HomeCubit(),
+                    child: const ProductOfCategoryScreen(),
+                  ),
+                  settings: RouteSettings(
+                    name: ProductOfCategoryScreen.routeName,
+                    arguments: widget.categories[index],
+                  ),
+                ),
               );
             },
             tabs: widget.categories
                 .map(
-                  (source) => TabItemWidget(
-                    category: source,
+                  (category) => TabItemWidget(
+                    category: category,
                   ),
                 )
                 .toList(),
