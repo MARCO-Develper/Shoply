@@ -1,58 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shoply/core/common/widget/product_item_widget.dart';
-import 'package:shoply/core/data/remote_data/home_api.dart';
 import 'package:shoply/core/model/response/category_response.dart';
+import 'package:shoply/feature/home/controller/home_cubit.dart';
 
-class ProductOfCategoryScreen extends StatelessWidget {
+class ProductOfCategoryScreen extends StatefulWidget {
   static const String routeName = 'ProductOfCategoryScreen';
   const ProductOfCategoryScreen({super.key});
 
   @override
+  State<ProductOfCategoryScreen> createState() => _ProductOfCategoryScreenState();
+}
+
+class _ProductOfCategoryScreenState extends State<ProductOfCategoryScreen> {
+  late HomeCubit cubit;
+  CategoryResponse? category;
+
+  @override
+  void initState() {
+    super.initState();
+    cubit = HomeCubit.get(context);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (category == null) {
+      category = ModalRoute.of(context)?.settings.arguments as CategoryResponse?;
+      if (category != null) {
+        // تحميل منتجات هذه الفئة
+        cubit.getProductsOfCategory(category!.id.toString());
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var category =
-        ModalRoute.of(context)?.settings.arguments as CategoryResponse?;
     return Scaffold(
-      backgroundColor: Color(0xffEBEBEB),
+      backgroundColor: const Color(0xffEBEBEB),
       appBar: AppBar(
-        backgroundColor: Color(0xffEBEBEB),
+        backgroundColor: const Color(0xffEBEBEB),
         title: Text(
           category?.name ?? 'Products',
           style: GoogleFonts.roboto(
-            color: Color(0xff212121),
+            color: const Color(0xff212121),
             fontSize: 22,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-          future: HomeApi.getProductsOfCategory(category!.id.toString()),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No products found'));
-            } else {
-              var productsList = snapshot.data!;
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                physics: const BouncingScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.7, // Better aspect ratio for products
-                ),
-                itemCount: productsList.length,
-                itemBuilder: (context, index) => ProductItemWidget(
-                  product: productsList[index],
-                ),
-              );
-            }
-          }),
+      body: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          if (state is HomeProductOfCategoryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is HomeProductOfCategoryError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.messageError,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (category != null) {
+                        cubit.getProductsOfCategory(category!.id.toString());
+                      }
+                    },
+                    child: const Text('إعادة المحاولة'),
+                  ),
+                ],
+              ),
+            );
+          } else if (cubit.productsOfCategory.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_bag_outlined,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'لا توجد منتجات في هذه الفئة',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            physics: const BouncingScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: cubit.productsOfCategory.length,
+            itemBuilder: (context, index) => ProductItemWidget(
+              product: cubit.productsOfCategory[index],
+            ),
+          );
+        },
+      ),
     );
   }
 }
