@@ -5,6 +5,7 @@ class CartLocalData {
   CartLocalData._();
   static CartLocalData? cartLocalData;
   static late Box<ProductResponse> productBox;
+  
   static Future<CartLocalData> get instance async {
     await Hive.openBox<ProductResponse>('cart');
     productBox = Hive.box<ProductResponse>('cart');
@@ -19,9 +20,19 @@ class CartLocalData {
     return productBox.values.toList();
   }
 
-  deleteToCart() {}
+  Future<void> deleteToCart(int productId) async {
+    await productBox.delete(productId);
+  }
 
-  updateToCart() {}
+  Future<void> updateToCart(ProductResponse product) async {
+    await productBox.put(product.id, product);
+  }
 
-  clearCart() {}
+  Future<void> clearCart() async {
+    await productBox.clear();
+  }
+
+  bool isInCart(int productId) {
+    return productBox.containsKey(productId);
+  }
 }
