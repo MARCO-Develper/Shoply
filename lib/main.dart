@@ -1,4 +1,6 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shoply/core/common/screens/product_details_screen.dart';
+import 'package:shoply/core/model/response/product_response.dart';
 import 'package:shoply/core/storage_helper/app_shared_preference_helper.dart';
 import 'package:shoply/feature/app_section/app_section.dart';
 import 'package:shoply/feature/auth/view/login_screen.dart';
@@ -10,6 +12,8 @@ import 'package:flutter/material.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesHelper.init();
+  await Hive.initFlutter();
+  Hive.registerAdapter<ProductResponse>(ProductResponseAdapter());
   runApp(const Shoply());
 }
 
