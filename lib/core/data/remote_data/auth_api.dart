@@ -30,4 +30,15 @@ abstract class AuthApi {
     var json = jsonDecode(responseBody);
     return LoginResponse.fromJson(json);
   }
+
+  static Future<LoginResponse> refreshToken(String refreshToken) async {
+  Uri url = Uri.https('api.escuelajs.co', '/api/v1/auth/refresh-token');
+  var response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'refreshToken': refreshToken}),
+  );
+  var json = jsonDecode(response.body);
+  return LoginResponse.fromJson(json);
+}
 }

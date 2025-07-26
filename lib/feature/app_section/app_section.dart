@@ -3,6 +3,7 @@ import 'package:shoply/feature/cart/view/cart_screen.dart';
 import 'package:shoply/feature/favorite/view/favorite_screen.dart';
 import 'package:shoply/feature/home/controller/home_cubit.dart';
 import 'package:shoply/feature/home/view/home_screen.dart';
+import 'package:shoply/feature/profile/controller/profile_cubit.dart';
 import 'package:shoply/feature/profile/view/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -53,7 +54,9 @@ class _AppSectionState extends State<AppSection> {
               height: 23,
               width: 23,
               fit: BoxFit.cover,
-              color: index == 0 ? const Color(0xff212121) : const Color(0xff5C5C5C),
+              color: index == 0
+                  ? const Color(0xff212121)
+                  : const Color(0xff5C5C5C),
             ),
             label: 'Home',
           ),
@@ -63,7 +66,9 @@ class _AppSectionState extends State<AppSection> {
               height: 23,
               width: 23,
               fit: BoxFit.cover,
-              color: index == 1 ? const Color(0xff212121) : const Color(0xff5C5C5C),
+              color: index == 1
+                  ? const Color(0xff212121)
+                  : const Color(0xff5C5C5C),
             ),
             label: 'Cart',
           ),
@@ -73,7 +78,9 @@ class _AppSectionState extends State<AppSection> {
               height: 23,
               width: 23,
               fit: BoxFit.cover,
-              color: index == 2 ? const Color(0xff212121) : const Color(0xff5C5C5C),
+              color: index == 2
+                  ? const Color(0xff212121)
+                  : const Color(0xff5C5C5C),
             ),
             label: 'Favorite',
           ),
@@ -83,7 +90,9 @@ class _AppSectionState extends State<AppSection> {
               height: 23,
               width: 23,
               fit: BoxFit.cover,
-              color: index == 3 ? const Color(0xff212121) : const Color(0xff5C5C5C),
+              color: index == 3
+                  ? const Color(0xff212121)
+                  : const Color(0xff5C5C5C),
             ),
             label: 'Profile',
           ),
@@ -93,15 +102,20 @@ class _AppSectionState extends State<AppSection> {
         child: IndexedStack(
           index: index,
           children: [
-            // الصفحة الرئيسية مع BlocProvider
             BlocProvider<HomeCubit>(
-              create: (context) => HomeCubit(),
+              create: (context) => HomeCubit()
+                ..getCategories()
+                ..getProducts(),
               child: const HomeScreen(),
             ),
-            // باقي الصفحات
             const CartScreen(),
             const FavoriteScreen(),
-            const ProfileScreen(),
+            BlocProvider<ProfileCubit>(
+              create: (context) => ProfileCubit()
+                ..getDataProfile(
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTc1MzQ2ODYxMSwiZXhwIjoxNzU1MTk2NjExfQ.F9_ibnnKXdBahEHu88_hXt0sXWLoWIIOpmA8MNgaD4I'),
+              child: ProfileScreen(),
+            ),
           ],
         ),
       ),
