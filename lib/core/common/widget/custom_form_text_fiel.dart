@@ -17,6 +17,7 @@ class CustomTextFormField extends StatefulWidget {
     this.action,
     this.focusNode,
     this.borderRadius,
+    this.enable = true,
   });
   final TextEditingController? controller;
   final bool isPassword;
@@ -29,6 +30,7 @@ class CustomTextFormField extends StatefulWidget {
   final TextInputAction? action;
   final FocusNode? focusNode;
   final BorderRadius? borderRadius;
+  final bool? enable;
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -52,6 +54,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return TextFormField(
       controller: widget.controller,
       validator: widget.validator,
+      enabled: widget.enable,
       onChanged: (text) {
         widget.onChanged?.call(text);
       },
@@ -94,7 +97,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 ),
               )
             : widget.suffixWidget,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 13, vertical: 14),
         border: outlineInputBorder(color: Colors.grey, width: 1),
         enabledBorder: outlineInputBorder(color: Colors.grey, width: 1),
         focusedBorder: outlineInputBorder(color: Colors.black, width: 1),
@@ -104,7 +108,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     );
   }
 
-  OutlineInputBorder outlineInputBorder({required Color color, required double width}) {
+  OutlineInputBorder outlineInputBorder(
+      {required Color color, required double width}) {
     return OutlineInputBorder(
       borderRadius: widget.borderRadius ?? BorderRadius.circular(10),
       borderSide: BorderSide(color: color, width: width),
