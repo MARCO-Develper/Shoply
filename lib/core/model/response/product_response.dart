@@ -1,15 +1,24 @@
+import 'package:hive/hive.dart';
 import 'package:shoply/core/model/response/category_response.dart';
 
+part 'product_response.g.dart';
+
+@HiveType(typeId: 0)
 class ProductResponse {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   String? title;
   String? slug;
+  @HiveField(2)
   int? price;
   String? description;
   CategoryResponse? category;
   List<String>? images;
   String? creationAt;
   String? updatedAt;
+  @HiveField(3)
+  int quantity = 1;
 
   ProductResponse({
     this.id,
@@ -21,6 +30,7 @@ class ProductResponse {
     this.images,
     this.creationAt,
     this.updatedAt,
+    this.quantity = 1,
   });
 
   ProductResponse.fromJson(Map<String, dynamic> json) {
